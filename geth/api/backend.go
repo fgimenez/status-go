@@ -200,22 +200,19 @@ func (m *StatusBackend) CallRPC(inputJSON string) string {
 }
 
 // SendTransaction creates a new transaction and waits until it's complete.
-func (m *StatusBackend) SendTransaction(ctx context.Context, args common.SendTxArgs) (gethcommon.Hash, error) {
+func (m *StatusBackend) SendTransaction(ctx context.Context, args common.SendTxArgs) (hash gethcommon.Hash, err error) {
 	if ctx == nil {
 		ctx = context.Background()
 	}
-
 	tx := common.CreateTransaction(ctx, args)
-
 	if err := m.txQueueManager.QueueTransaction(tx); err != nil {
-		return gethcommon.Hash{}, err
+		return hash, err
 	}
-
-	if err := m.txQueueManager.WaitForTransaction(tx); err != nil {
-		return gethcommon.Hash{}, err
+	rst := m.txQueueManager.WaitForTransaction(tx)
+	if rst.Error != nil {
+		return hash, rst.Error
 	}
-
-	return tx.Hash, nil
+	return rst.Hash, nil
 }
 
 // CompleteTransaction instructs backend to complete sending of a given transaction

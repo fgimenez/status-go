@@ -65,13 +65,13 @@ type ReturnSendTransactionEvent struct {
 }
 
 // NotifyOnReturn returns handler that processes responses from internal tx manager
-func NotifyOnReturn(queuedTx *common.QueuedTx) {
-	// discard notifications with empty tx
-	if queuedTx == nil {
+func NotifyOnReturn(queuedTx *common.QueuedTx, err error) {
+	// we don't want to notify a user if tx wassent successfully
+	if err == nil {
 		return
 	}
-	// we don't want to notify a user if tx sent successfully
-	if queuedTx.Err == nil {
+	// discard notifications with empty tx
+	if queuedTx == nil {
 		return
 	}
 	signal.Send(signal.Envelope{
@@ -80,8 +80,8 @@ func NotifyOnReturn(queuedTx *common.QueuedTx) {
 			ID:           string(queuedTx.ID),
 			Args:         queuedTx.Args,
 			MessageID:    common.MessageIDFromContext(queuedTx.Context),
-			ErrorMessage: queuedTx.Err.Error(),
-			ErrorCode:    strconv.Itoa(sendTransactionErrorCode(queuedTx.Err)),
+			ErrorMessage: err.Error(),
+			ErrorCode:    strconv.Itoa(sendTransactionErrorCode(err)),
 		},
 	})
 }

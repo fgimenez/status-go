@@ -534,9 +534,9 @@ func (mr *MockTxQueueManagerMockRecorder) QueueTransaction(tx interface{}) *gomo
 }
 
 // WaitForTransaction mocks base method
-func (m *MockTxQueueManager) WaitForTransaction(tx *QueuedTx) error {
+func (m *MockTxQueueManager) WaitForTransaction(tx *QueuedTx) RawCompleteTransactionResult {
 	ret := m.ctrl.Call(m, "WaitForTransaction", tx)
-	ret0, _ := ret[0].(error)
+	ret0, _ := ret[0].(RawCompleteTransactionResult)
 	return ret0
 }
 
@@ -610,16 +610,6 @@ func (m *MockTxQueueManager) DiscardTransactions(ids []QueuedTxID) map[QueuedTxI
 // DiscardTransactions indicates an expected call of DiscardTransactions
 func (mr *MockTxQueueManagerMockRecorder) DiscardTransactions(ids interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DiscardTransactions", reflect.TypeOf((*MockTxQueueManager)(nil).DiscardTransactions), ids)
-}
-
-// DisableNotificactions mocks base method
-func (m *MockTxQueueManager) DisableNotificactions() {
-	m.ctrl.Call(m, "DisableNotificactions")
-}
-
-// DisableNotificactions indicates an expected call of DisableNotificactions
-func (mr *MockTxQueueManagerMockRecorder) DisableNotificactions() *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DisableNotificactions", reflect.TypeOf((*MockTxQueueManager)(nil).DisableNotificactions))
 }
 
 // MockJailCell is a mock of JailCell interface

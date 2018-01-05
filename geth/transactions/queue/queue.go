@@ -133,9 +133,6 @@ func (q *TxQueue) Reset() {
 // Enqueue enqueues incoming transaction
 func (q *TxQueue) Enqueue(tx *common.QueuedTx) error {
 	log.Info(fmt.Sprintf("enqueue transaction: %s", tx.ID))
-	if (tx.Hash != gethcommon.Hash{} || tx.Err != nil) {
-		return ErrQueuedTxAlreadyProcessed
-	}
 
 	log.Info("before enqueueTicker")
 	q.enqueueTicker <- struct{}{} // notify eviction loop that we are trying to insert new item
@@ -204,17 +201,15 @@ func (q *TxQueue) Done(id common.QueuedTxID, hash gethcommon.Hash, err error) er
 
 func (q *TxQueue) done(tx *common.QueuedTx, hash gethcommon.Hash, err error) {
 	delete(q.inprogress, tx.ID)
-	tx.Err = err
 	// hash is updated only if err is nil, but transaction is not removed from a queue
 	if err == nil {
+		q.transactions[tx.ID].Result <- common.RawCompleteTransactionResult{Hash: hash, Error: err}
 		q.remove(tx.ID)
-		tx.Hash = hash
-		close(tx.Done)
 		return
 	}
 	if _, transient := transientErrs[err.Error()]; !transient {
+		q.transactions[tx.ID].Result <- common.RawCompleteTransactionResult{Error: err}
 		q.remove(tx.ID)
-		close(tx.Done)
 	}
 }
 
