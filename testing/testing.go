@@ -82,10 +82,10 @@ func LoadFromFile(filename string) string {
 	}
 
 	buf := bytes.NewBuffer(nil)
-	io.Copy(buf, f)
-	f.Close()
+	io.Copy(buf, f) // nolint: gas
+	f.Close()       // nolint: gas
 
-	return string(buf.Bytes())
+	return buf.String()
 }
 
 // EnsureNodeSync waits until node synchronzation is done to continue
