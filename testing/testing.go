@@ -86,7 +86,7 @@ func LoadFromFile(filename string) string {
 	io.Copy(buf, f)
 	f.Close()
 
-	return string(buf.Bytes())
+	return buf.String()
 }
 
 // EnsureNodeSync waits until node synchronzation is done to continue

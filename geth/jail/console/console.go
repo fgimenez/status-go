@@ -18,7 +18,10 @@ func Write(fn otto.FunctionCall, w io.Writer, consoleEventName string) otto.Valu
 	})
 
 	// Next print out the giving values.
-	fmt.Fprintf(w, "%s: %s", consoleEventName, formatForConsole(fn.ArgumentList))
+	_, err := fmt.Fprintf(w, "%s: %s", consoleEventName, formatForConsole(fn.ArgumentList))
+	if err != nil {
+		fmt.Printf("unexpected err %v", err)
+	}
 
 	return otto.UndefinedValue()
 }
